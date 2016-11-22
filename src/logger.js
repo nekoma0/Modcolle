@@ -1,33 +1,40 @@
 'use strict'
 
-const LOGGER_SILENT = process.env.LOGGER_SILENT
+const LOGGER_COMMON_SILENT = process.env.LOGGER_COMMON_SILENT
+const LOGGER_KCAPI_SILENT = process.env.LOGGER_KCAPI_SILENT
 const LOGGER_LEVEL = process.env.LOGGER_LEVEL
 
 const winston = require('winston')
 const labels = ['app:middleware', 'app:router', 'service:dmm', 'service:kancolle']
-
-const loggers = {}
-labels.forEach(label => {
-  createCustomWinstonLogger(label)
-  loggers[label] = winston.loggers.get(label)
-})
+const kancolleApi = 'kancolle:api'
 
 module.exports = function(label) {
-  if(!loggers[label])
-    return winston
-  return loggers[label]
+  return winston.loggers.get(label)
 }
 
-function createCustomWinstonLogger(label) {
+labels.forEach(label => newWinstonLoggerCommonConfig(label))
+configureKcApiLogger(kancolleApi)
+
+function newWinstonLoggerCommonConfig(label) {
   const loggerConfig = {
     console: {
       label: label,
       level: LOGGER_LEVEL,
-      colorize: 'all',
-      silent: LOGGER_SILENT === 'true',
+      colorize: true,
+      silent: LOGGER_COMMON_SILENT === 'true',
       timestamp: true,
       prettyPrint: false,
     }
   }
   winston.loggers.add(label, loggerConfig)
+}
+
+function configureKcApiLogger(label) {
+  winston.loggers.add(label, {
+    console: {
+      label: label,
+      level: LOGGER_LEVEL,
+      silent: LOGGER_KCAPI_SILENT === 'true'
+    }
+  })
 }

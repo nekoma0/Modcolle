@@ -3,6 +3,7 @@
 const express = require('express')
 const router = express.Router()
 const log = require('../../logger')('app:router')
+const logKcApi = require('../../logger')('kancolle:api')
 const kancolle = require('../../kancolle/')
 const translator = require('../../translation/')
 
@@ -22,7 +23,8 @@ router.post('/*', extractWorldIdFromApiToken, (req, res, next) => {
   .then(apiResponse => {
     apiResponse = apiResponse.replace('svdata=', '')
     apiResponse = JSON.parse(apiResponse)
-    log.verbose(`${server.host} API ${req.originalUrl} respond %j`, apiResponse)
+    logKcApi.info(`${server.host} API ${req.originalUrl}`, apiResponse)
+    log.verbose(`translate API to language ${req.body.lang}`)
     res.json(translator.translate(req.originalUrl, req.body.lang, apiResponse))
   })
   .catch(next)
