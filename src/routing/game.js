@@ -16,7 +16,7 @@ router.get('/', (req, res, next) => {
   log.info(`OSAPI: get DMM game metadata of app id ${kancolle.appId}`)
   osapi.getGameInfo(kancolle.appId, req.user)
   .then(kancolle.launch)
-  .then(redirectKancolleNetworkTraffic)
+  .then(url => redirectKancolleNetworkTraffic(url, req.body.lang))
   .then(url => {
     log.info('render HTML template "kancolle" with Kancolle game url')
     return res.render('kancolle', {flashUrl: url})
@@ -29,7 +29,7 @@ router.post('/login', passport.authenticate('local', {
   failureRedirect: '/'
 }))
 
-function redirectKancolleNetworkTraffic(url) {
+function redirectKancolleNetworkTraffic(url, apiLanguage) {
   const TARGET_FILE = 'mainD2.swf'
   log.info(`configure command line args of ${TARGET_FILE} to make HTTP request to Modcolle`)
 
@@ -41,7 +41,7 @@ function redirectKancolleNetworkTraffic(url) {
   }
 
   const server = kancolle.getServer(url.hostname)
-  const apiTokenWithExtraEmbededInfo = [url.query.api_token, server.worldId].join('_') // embed player's info so that any API POST request from flash will contain this information
+  const apiTokenWithExtraEmbededInfo = [url.query.api_token, server.worldId, apiLanguage].join('_') // embed player's info so that any API POST request from flash will contain this information
 
   log.verbose(`remove host name ${url.hostname} from url`)
   const interceptedUrl = urljoin(
