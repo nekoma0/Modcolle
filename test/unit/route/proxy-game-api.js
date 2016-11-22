@@ -16,6 +16,13 @@ describe('proxy Kancolle API', () => {
     payload = {api_token: 'abcdef01234'}
   })
 
+  it('have no API token should reject request', done => {
+    request(app)
+    .post('/kcsapi/some/api')
+    .expect(400)
+    .end(done)
+  })
+
   it('have only API token should reject request', done => {
     request(app)
     .post('/kcsapi/some/api')
