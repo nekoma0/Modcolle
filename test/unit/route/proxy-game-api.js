@@ -47,7 +47,7 @@ describe('proxy Kancolle API', () => {
       this.stub(kancolle, 'getServer', () => {
         return new Server(world, host)
       })
-      const embededPayload = {api_token: [world, payload.api_token].join(EMBEDED_SYMBOL)}
+      const embededPayload = {api_token: [payload.api_token, world].join(EMBEDED_SYMBOL)}
 
       nock(host)
       .post('/kcsapi/some/api', payload)

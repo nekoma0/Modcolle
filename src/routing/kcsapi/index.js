@@ -46,8 +46,8 @@ function extractWorldIdFromApiToken(req, res, next) {
   }
 
   log.verbose('extract id from api token assuming that id comes before api token')
-  req.body.worldId = extraInfos[0]
-  req.body.api_token = extraInfos[1]
+  req.body.api_token = extraInfos[0]
+  req.body.worldId = extraInfos[1]
   return next()
 }
 
